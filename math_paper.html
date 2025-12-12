@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathPaper Pro v4.0 (完美最终版)</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. 您的原始样式 (Scope 隔离版 - 未修改)
+           ========================================= */
+        .paper-style-scope {
+            font-family: Times New Roman, STZhongsong;
+            color: #000000;
+            line-height: 1.8em;
+            word-break: break-all;
+            font-size: 16px;
+        }
+
+        .paper-style-scope .stzhongsong-fix {
+            font-family: "STZhongsong", serif;
+            vertical-align: 0.045em;
+        }
+        .paper-style-scope .katex { font-family: "Times New Roman", Times, serif !important; font-size: 1.1em; }
+        .paper-style-scope .mrel, 
+        .paper-style-scope .mopen, 
+        .paper-style-scope .mclose { font-family: KaTeX_Main !important; }
+        .paper-style-scope .mathnormal { font-family: "Times New Roman" !important; }
+        .paper-style-scope .katex .mathnormal { font-family: "Times New Roman", Times, serif !important; }
+        .paper-style-scope .mord.mtight { font-family: "Times New Roman"; }
+
+        .paper-style-scope pp::before {
+            content: "(" counter(pp-counter) ")";
+            counter-increment: pp-counter;
+            position: absolute;
+            left: -25px;
+            color: black;
+            font-size: 1.1em;
+            font-family: "Times New Roman";
+        }
+
+        .paper-style-scope li { counter-reset: pp-counter; }
+        .paper-style-scope li::marker { font-size: 1.1em; margin-right: 10px; font-family: "Times New Roman"; }
+        .paper-style-scope pp { margin-left: 25px; position: relative; display: block; }
+        .paper-style-scope ol { list-style: decimal; padding-left: 2em; margin: 0; }
+        .paper-style-scope ul { list-style: disc; padding-left: 2em; margin: 0; }
+        .paper-style-scope strong { font-weight: bold; }
+
+        .paper-style-scope gg {
+            display: block;
+            border: 1px solid black;
+            font-size: 1.1em;
+            line-height: 1.6em;
+            padding: 5px;
+            text-align: center;
+            margin-bottom: 1em;
+            font-family: "STZhongsong";
+        }
+
+        /* =========================================
+           2. 排版系统核心样式
+           ========================================= */
+        body { margin: 0; overflow: hidden; background: #e5e7eb; }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 0 auto 20px auto;
+            padding: 20mm;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .block-wrapper { position: relative; width: 100%; }
+        .block-wrapper:hover { background-color: rgba(59, 130, 246, 0.03); }
+
+        .resize-handle {
+            height: 5px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            cursor: ns-resize;
+            z-index: 50;
+        }
+        .block-wrapper:hover .resize-handle { background: rgba(0,0,0,0.05); }
+        .resize-handle:hover, .resize-handle.active { background: #3b82f6 !important; height: 8px; }
+
+        .force-break-indicator {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+        .block-wrapper.forced-break .force-break-indicator { display: block; }
+
+        #measure-jail {
+            position: absolute;
+            top: 0; left: 0;
+            width: 170mm;
+            z-index: -999;
+            visibility: hidden;
+            background: white;
+        }
+
+        /* =========================================
+           3. 打印专用样式
+           ========================================= */
+        @page { size: A4 portrait; margin: 0; }
+        @media print {
+            body, html, #app, #app-main, .preview-container {
+                height: auto !important;
+                overflow: visible !important;
+                background: white !important;
+                display: block !important;
+                position: static !important;
+            }
+            #app-header, #app-editor-panel, .resize-handle, .force-break-indicator, ::-webkit-scrollbar {
+                display: none !important;
+            }
+            .w-3\/5 { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .a4-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                break-after: page;
+                page-break-after: always;
+            }
+            .a4-page:last-child { break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="h-screen flex flex-col">
+    <header id="app-header" class="h-14 bg-white border-b flex items-center justify-between px-6 shrink-0 z-50">
+        <div class="font-bold text-gray-700">
+            <i class="fa-solid fa-check-double text-blue-600 mr-2"></i>MathPaper Pro v4.0
+        </div>
+        <div class="text-sm" :class="statusColor">
+            <i class="fa-solid fa-circle text-[10px] mr-1"></i> {{ statusText }}
+        </div>
+        <button @click="printDoc" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">
+            打印 / 导出 PDF
+        </button>
+    </header>
+
+    <div id="app-main" class="flex-1 flex overflow-hidden">
+        <div id="app-editor-panel" class="w-2/5 flex flex-col border-r bg-white">
+            <textarea 
+                v-model="rawInput" 
+                @input="handleInput"
+                class="flex-1 w-full p-6 resize-none outline-none font-mono text-sm leading-relaxed"
+                placeholder="支持格式：&#10;# 试卷标题&#10;12. 题目内容...&#10;(1) 小题内容..."
+                spellcheck="false"
+            ></textarea>
+        </div>
+
+        <div class="preview-container w-3/5 bg-gray-200 overflow-y-auto relative p-8 flex flex-col items-center">
+            <div id="print-area">
+                <div v-for="(page, pIdx) in pages" :key="pIdx" class="a4-page paper-style-scope">
+                    <div v-for="block in page.blocks" :key="block.id" 
+                         class="block-wrapper"
+                         :class="{ 'forced-break': block.forcePageBreak }"
+                         :style="{ paddingBottom: block.spacing + 'px' }"
+                         @dblclick="toggleBreak(block.id)"
+                    >
+                        <math-block :html="block.html"></math-block>
+                        <div class="resize-handle" @mousedown.prevent="startDrag($event, block)"></div>
+                        <div class="force-break-indicator"><i class="fa-solid fa-arrow-down"></i> 分页</div>
+                    </div>
+                    <div class="absolute bottom-5 left-0 w-full text-center text-xs text-black" style="font-family: 'Times New Roman'">
+                        - {{ pIdx + 1 }} -
+                    </div>
+                </div>
+            </div>
+            <div v-if="pages.length === 0" class="mt-20 text-gray-500">正在等待输入...</div>
+        </div>
+    </div>
+
+    <div id="measure-jail" class="paper-style-scope">
+        <div v-for="block in allBlocks" :key="block.id" :id="'measure-' + block.id" style="margin:0;">
+             <math-block :html="block.html"></math-block>
+        </div>
+    </div>
+</div>
+
+<script>
+const { createApp, ref, reactive, nextTick, onMounted, watch } = Vue;
+
+// --- 独立的 MathBlock 组件 (修复了动态更新Bug) ---
+const MathBlock = {
+    props: ['html'],
+    template: `<div ref="root" v-html="html"></div>`,
+    setup(props) {
+        const root = ref(null);
+
+        const applyStyles = () => {
+            if (!root.value) return;
+            // 执行 KaTeX
+            try {
+                if (typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(root.value, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                }
+            } catch (e) { console.error(e); }
+
+            // 执行字体微调 (您的原始逻辑)
+            const spans = root.value.querySelectorAll('span.mord.mtight');
+            spans.forEach(span => {
+                if (span.textContent.trim() === "′") {
+                    span.style.paddingLeft = '0.1em';
+                    span.style.fontFamily = 'KaTeX_Main';
+                }
+            });
+            const spans2 = root.value.querySelectorAll('span.mord.mathnormal');
+            spans2.forEach(span => {
+                if (span.textContent.trim() === "f") {
+                    span.style.paddingLeft = '0.1em';
+                }
+            });
+        };
+
+        onMounted(applyStyles);
+        
+        // [修复点] 监听 props 变化，确保左侧编辑时右侧实时渲染公式
+        watch(() => props.html, () => {
+            nextTick(applyStyles);
+        });
+
+        return { root };
+    }
+};
+
+createApp({
+    components: { MathBlock },
+    setup() {
+        // 初始示例
+        const defaultText = `# 2025 徐汇一模
+12. 已知定义域 $A=\\{1, 2, 3\\}$ 的函数 $y=f(x)$ 的值域也是 $A$，所有这样的函数 $y=f(x)$ 形成集合 $B$. 设非空集合 $C \\subseteq B$ 且 $\\overline{C}$ 中的每一个函数都是 $C$ 中的两个函数 (可以相同) 复合函数，则集合 $C$ 的元素个数的最小值为_______.
+
+16. 已知数列 $\\{a_n\\}$ 的前 $n$ 项和为 $S_n$，设 $t_n = \\dfrac{S_n}{n}$ ( $n$ 为正整数). 若存在常数 $c$，使得任意两两不相等的正整数 $i, j, k$，都有 $(i-j)t_k + (j-k)t_i + (k-i)t_j = c$，则称数列 $\\{a_n\\}$ 为 “**轮换均值数列**”. 判断如下两个命题________：
+(1) 任意等差数列 $\\{a_n\\}$ 都是 “轮换均值数列”；
+(2) 存在公比不为 $1$ 的等比数列 $\\{b_n\\}$ 是 “轮换均值数列”.`;
+
+        const rawInput = ref(defaultText);
+        const allBlocks = ref([]);
+        const pages = ref([]);
+        const statusText = ref("就绪");
+        const statusColor = ref("text-gray-500");
+
+        // --- 解析器 (包含新 Feature) ---
+        const parse = () => {
+            statusText.value = "解析中...";
+            const text = rawInput.value;
+            const lines = text.split(/\r?\n/);
+            
+            const blocks = [];
+            let current = null;
+            let idSeq = 1;
+
+            const fixFont = (str) => str.replace(/([\u4e00-\u9fff]+)/g, '<span class="stzhongsong-fix">$1</span>');
+
+            const flushCurrent = () => {
+                if (current) {
+                    if (current.type === 'title') {
+                        current.html = `<gg>${fixFont(current.rawContent)}</gg>`;
+                    } else if (current.type === 'question') {
+                        current.html = `<ol start="${current.number}"><li>${fixFont(current.rawContent)}</li></ol>`;
+                    } else {
+                        current.html = `<div>${fixFont(current.rawContent)}</div>`;
+                    }
+                    blocks.push(current);
+                }
+            };
+
+            lines.forEach(line => {
+                const trim = line.trim();
+                if (!trim) return;
+
+                // 1. 标题解析 (# 开头)
+                if (trim.startsWith('# ')) {
+                    flushCurrent();
+                    current = {
+                        id: idSeq++, type: 'title',
+                        rawContent: trim.substring(1).trim(),
+                        spacing: 20, forcePageBreak: false
+                    };
+                    return; // 处理完毕，跳过
+                }
+
+                // 兼容旧的 <gg> 写法
+                if (trim.startsWith('<gg>')) {
+                    flushCurrent();
+                    current = {
+                        id: idSeq++, type: 'title',
+                        rawContent: trim.replace(/<\/?gg>/g, ''),
+                        spacing: 20, forcePageBreak: false
+                    };
+                    return;
+                }
+
+                // 2. 题目解析 (数字. 开头)
+                const matchQ = trim.match(/^(\d+)\.(.*)/);
+                if (matchQ) {
+                    flushCurrent();
+                    current = {
+                        id: idSeq++, type: 'question',
+                        number: matchQ[1],
+                        rawContent: matchQ[2].trim(),
+                        spacing: 40, forcePageBreak: false
+                    };
+                    return;
+                }
+
+                // 3. 小题解析 ( (1) 或 （1） 开头 )
+                // Feature: 解析为 <pp> 且不产生额外行距
+                const matchSub = trim.match(/^(\(\d+\)|（\d+）)(.*)/);
+                if (matchSub && current) {
+                    // 直接追加 <pp>，不加 <br>，实现紧凑效果
+                    // 注意：<pp> 是 block 元素，会自动换行，但没有额外的 br 间隙
+                    current.rawContent += `<pp>${matchSub[2]}</pp>`; 
+                    return;
+                }
+
+                // 4. 普通续行
+                if (current) {
+                    current.rawContent += `<br>${trim}`;
+                } else {
+                    current = {
+                        id: idSeq++, type: 'text',
+                        rawContent: trim,
+                        spacing: 30, forcePageBreak: false
+                    };
+                }
+            });
+            flushCurrent();
+
+            // 状态保留
+            if (allBlocks.value.length > 0) {
+                blocks.forEach((b, i) => {
+                    if (allBlocks.value[i] && allBlocks.value[i].type === b.type) {
+                        b.spacing = allBlocks.value[i].spacing;
+                        b.forcePageBreak = allBlocks.value[i].forcePageBreak;
+                    }
+                });
+            }
+
+            allBlocks.value = blocks;
+            nextTick(layout);
+        };
+
+        const layout = () => {
+            statusText.value = "排版中...";
+            setTimeout(() => {
+                const PAGE_H = 1060;
+                const newPages = [];
+                let curPage = { blocks: [], h: 0 };
+
+                allBlocks.value.forEach(block => {
+                    const el = document.getElementById('measure-' + block.id);
+                    const realH = el ? el.offsetHeight : 50; 
+                    const totalH = realH + block.spacing;
+
+                    if (block.forcePageBreak || (curPage.h + totalH > PAGE_H && curPage.blocks.length > 0)) {
+                        newPages.push(curPage);
+                        curPage = { blocks: [], h: 0 };
+                    }
+                    curPage.blocks.push(block);
+                    curPage.h += totalH;
+                });
+                if (curPage.blocks.length) newPages.push(curPage);
+                
+                pages.value = newPages;
+                statusText.value = "已更新";
+                statusColor.value = "text-green-600";
+            }, 100);
+        };
+
+        let inputTimer = null;
+        const handleInput = () => {
+            statusText.value = "输入中...";
+            statusColor.value = "text-yellow-600";
+            clearTimeout(inputTimer);
+            inputTimer = setTimeout(parse, 1000); // 防抖调整为 1000ms
+        };
+
+        const isDragging = ref(false);
+        const dragData = reactive({ startY: 0, startSpace: 0, block: null });
+        
+        const startDrag = (e, block) => {
+            isDragging.value = true;
+            dragData.startY = e.clientY;
+            dragData.startSpace = block.spacing;
+            dragData.block = block;
+            document.body.style.cursor = 'ns-resize';
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        };
+
+        const onDrag = (e) => {
+            if (!isDragging.value) return;
+            const dy = e.clientY - dragData.startY;
+            let newSpace = Math.max(10, dragData.startSpace + dy);
+            dragData.block.spacing = newSpace;
+            layout();
+        };
+
+        const stopDrag = () => {
+            isDragging.value = false;
+            document.body.style.cursor = '';
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        };
+
+        const toggleBreak = (id) => {
+            const b = allBlocks.value.find(x => x.id === id);
+            if (b) {
+                b.forcePageBreak = !b.forcePageBreak;
+                layout();
+            }
+        };
+
+        const printDoc = () => window.print();
+
+        onMounted(() => {
+            const checkKatex = setInterval(() => {
+                if (typeof renderMathInElement !== 'undefined') {
+                    clearInterval(checkKatex);
+                    parse();
+                }
+            }, 50);
+        });
+
+        return {
+            rawInput, pages, allBlocks, statusText, statusColor,
+            handleInput, startDrag, toggleBreak, printDoc
+        };
+    }
+}).mount('#app');
+</script>
+</body>
+</html>
