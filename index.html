@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathPaper Pro v4.0 (完美最终版)</title>
+    <title>MathPaper</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
@@ -54,15 +54,30 @@
         .paper-style-scope ul { list-style: disc; padding-left: 2em; margin: 0; }
         .paper-style-scope strong { font-weight: bold; }
 
-        .paper-style-scope gg {
+        .paper-style-scope .title-text {
             display: block;
-            border: 1px solid black;
+            font-size: 1.8em;
+            line-height: 1.6em;
+            /* padding: 5px; */
+            text-align: center;
+            /* margin-bottom: 1em; */
+            font-weight: bold;
+            font-family: 'Times New Roman', 'Heiti SC' !important;
+        }
+
+        .paper-style-scope .small-title {
+            display: inline-block;
+            border: 1px solid;
             font-size: 1.1em;
             line-height: 1.6em;
-            padding: 5px;
+            padding: 4px;
             text-align: center;
-            margin-bottom: 1em;
-            font-family: "STZhongsong";
+        }
+
+        .paper-style-scope .third-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            font-family: 'Times New Roman', 'Heiti SC' !important;
         }
 
         /* =========================================
@@ -150,7 +165,7 @@
 <div id="app" class="h-screen flex flex-col">
     <header id="app-header" class="h-14 bg-white border-b flex items-center justify-between px-6 shrink-0 z-50">
         <div class="font-bold text-gray-700">
-            <i class="fa-solid fa-check-double text-blue-600 mr-2"></i>MathPaper Pro v4.0
+            <i class="fa-solid fa-check-double text-blue-600 mr-2"></i>MathPaper v1.0
         </div>
         <div class="text-sm" :class="statusColor">
             <i class="fa-solid fa-circle text-[10px] mr-1"></i> {{ statusText }}
@@ -235,10 +250,20 @@ const MathBlock = {
                     span.style.fontFamily = 'KaTeX_Main';
                 }
             });
-            const spans2 = root.value.querySelectorAll('span.mord.mathnormal');
+            const spans2 = root.value.querySelectorAll('span.mord');
             spans2.forEach(span => {
                 if (span.textContent.trim() === "f") {
                     span.style.paddingLeft = '0.1em';
+                }
+                if (span.textContent.trim() === "∣" || span.textContent.trim() === "∀") {
+                    span.style.fontFamily = 'KaTeX_Main';
+                }
+            });
+            const spans3 = root.value.querySelectorAll('span.mbin');
+            spans3.forEach(span => {
+                console.log(span.textContent.trim());
+                if (span.textContent.trim() === "⋅") {
+                    span.style.fontFamily = 'KaTeX_Main';
                 }
             });
         };
@@ -258,12 +283,31 @@ createApp({
     components: { MathBlock },
     setup() {
         // 初始示例
-        const defaultText = `# 2025 徐汇一模
-12. 已知定义域 $A=\\{1, 2, 3\\}$ 的函数 $y=f(x)$ 的值域也是 $A$，所有这样的函数 $y=f(x)$ 形成集合 $B$. 设非空集合 $C \\subseteq B$ 且 $\\overline{C}$ 中的每一个函数都是 $C$ 中的两个函数 (可以相同) 复合函数，则集合 $C$ 的元素个数的最小值为_______.
+        const defaultText = `# 2050 年普通高等学校招生全国统一考试
+上海 数学试卷
+## 绝密·启用前
+### 一、填空题（本大题共 12 小题，满分 54 分）
+1. 欧拉公式的提出者是_________.
+11. 上海高中数学共有选择性必修_________册.
+12. 已知 $\\vec{a}, \\vec{b}, \\vec{c}$ 为平面内的单位向量，若对任意 $\\vec{a}, \\vec{b}$，均存在 $\\vec{c}$ 使 $\\vec{a} \\cdot \\vec{c}$ 与 $\\vec{b} \\cdot \\vec{c}$ 均小于 $\\dfrac 1 2$，则 $| \\vec{a} | + | \\vec{b} |$ 的最小值为________。
 
-16. 已知数列 $\\{a_n\\}$ 的前 $n$ 项和为 $S_n$，设 $t_n = \\dfrac{S_n}{n}$ ( $n$ 为正整数). 若存在常数 $c$，使得任意两两不相等的正整数 $i, j, k$，都有 $(i-j)t_k + (j-k)t_i + (k-i)t_j = c$，则称数列 $\\{a_n\\}$ 为 “**轮换均值数列**”. 判断如下两个命题________：
-(1) 任意等差数列 $\\{a_n\\}$ 都是 “轮换均值数列”；
-(2) 存在公比不为 $1$ 的等比数列 $\\{b_n\\}$ 是 “轮换均值数列”.`;
+
+### 二、选择题（本大题共 4 小题，满分 18 分）
+16. 给出以下两个命题，下列说法正确的是_______.
+（1）$\\left(\\sin \\dfrac \\pi 2\\right)'= \\cos \\dfrac \\pi 2$；
+（2）$\\left(\\cos \\dfrac \\pi 2\\right)'= \\sin \\dfrac \\pi 2$。
+A. (1) 为真命题， (2) 为真命题；
+B. (1) 为真命题， (2) 为假命题；
+C. (1) 为假命题， (2) 为真命题；
+D. (1) 为假命题， (2) 为假命题。
+
+### 三、解答题（本大题共 5 小题，满分 78 分）
+
+21. **（本题满分 14 分，第（1）小问 4 分，第（2）小问 6 分，第（3）小问 8 分）**
+若函数 $f(x)$ 的定义域为 $D$，当对 $\\forall x \\in D$ 均有 $f(x)=f_0(x)$ 时，我们称 $f(x)$ 为 $f_0(x)$-函数。
+（1）判断 $f(x)=\\sin x$ 是否为 $\\sin x$-函数，并说明理由；
+（2）已知 $a \\in \\mathbb{R}$，$f(x)=a\\sqrt{1-x}$，当 $f(x)$ 为 $\\pi\\sqrt{1-x}$-函数时，求 $a$ 的值，并判断此时 $a$ 是否是有理数；
+（3）证明：“$f(x)$ 是 $g(x)$-函数”不是“$g(x)$ 是 $f(x)$-函数”充分必要条件。`;
 
         const rawInput = ref(defaultText);
         const allBlocks = ref([]);
@@ -274,19 +318,23 @@ createApp({
         // --- 解析器 (包含新 Feature) ---
         const parse = () => {
             statusText.value = "解析中...";
-            const text = rawInput.value;
+            const text = rawInput.value.replace(/。/g, '．');
             const lines = text.split(/\r?\n/);
             
             const blocks = [];
             let current = null;
             let idSeq = 1;
 
-            const fixFont = (str) => str.replace(/([\u4e00-\u9fff]+)/g, '<span class="stzhongsong-fix">$1</span>');
+            const fixFont = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
             const flushCurrent = () => {
                 if (current) {
                     if (current.type === 'title') {
-                        current.html = `<gg>${fixFont(current.rawContent)}</gg>`;
+                        current.html = `<div class="title-text">${fixFont(current.rawContent)}</div>`;
+                    } else if (current.type === 'title2') {
+                        current.html = `<div class="small-title">${fixFont(current.rawContent)}</div>`;
+                    } else if (current.type === 'title3') {
+                        current.html = `<div class="third-title">${fixFont(current.rawContent)}</div>`;
                     } else if (current.type === 'question') {
                         current.html = `<ol start="${current.number}"><li>${fixFont(current.rawContent)}</li></ol>`;
                     } else {
@@ -297,30 +345,41 @@ createApp({
             };
 
             lines.forEach(line => {
-                const trim = line.trim();
-                if (!trim) return;
+                const trim0 = line.trim();
+                if (!trim0) return;
 
                 // 1. 标题解析 (# 开头)
-                if (trim.startsWith('# ')) {
+                if (trim0.startsWith('# ')) {
                     flushCurrent();
                     current = {
                         id: idSeq++, type: 'title',
-                        rawContent: trim.substring(1).trim(),
-                        spacing: 20, forcePageBreak: false
+                        rawContent: trim0.substring(1).trim(),
+                        spacing: 0, forcePageBreak: false
                     };
                     return; // 处理完毕，跳过
                 }
 
-                // 兼容旧的 <gg> 写法
-                if (trim.startsWith('<gg>')) {
+                if (trim0.startsWith('## ')) {
                     flushCurrent();
                     current = {
-                        id: idSeq++, type: 'title',
-                        rawContent: trim.replace(/<\/?gg>/g, ''),
-                        spacing: 20, forcePageBreak: false
+                        id: idSeq++, type: 'title2',
+                        rawContent: trim0.substring(2).trim(),
+                        spacing: 0, forcePageBreak: false
                     };
-                    return;
+                    return; // 处理完毕，跳过
                 }
+
+                if (trim0.startsWith('### ')) {
+                    flushCurrent();
+                    current = {
+                        id: idSeq++, type: 'title3',
+                        rawContent: trim0.substring(3).trim(),
+                        spacing: 0, forcePageBreak: false
+                    };
+                    return; // 处理完毕，跳过
+                }
+
+                const trim = trim0.replace(/([\u4e00-\u9fff]+)/g, '<span class="stzhongsong-fix">$1</span>');
 
                 // 2. 题目解析 (数字. 开头)
                 const matchQ = trim.match(/^(\d+)\.(.*)/);
@@ -330,17 +389,14 @@ createApp({
                         id: idSeq++, type: 'question',
                         number: matchQ[1],
                         rawContent: matchQ[2].trim(),
-                        spacing: 40, forcePageBreak: false
+                        spacing: 0, forcePageBreak: false
                     };
                     return;
                 }
 
                 // 3. 小题解析 ( (1) 或 （1） 开头 )
-                // Feature: 解析为 <pp> 且不产生额外行距
                 const matchSub = trim.match(/^(\(\d+\)|（\d+）)(.*)/);
                 if (matchSub && current) {
-                    // 直接追加 <pp>，不加 <br>，实现紧凑效果
-                    // 注意：<pp> 是 block 元素，会自动换行，但没有额外的 br 间隙
                     current.rawContent += `<pp>${matchSub[2]}</pp>`; 
                     return;
                 }
@@ -352,7 +408,7 @@ createApp({
                     current = {
                         id: idSeq++, type: 'text',
                         rawContent: trim,
-                        spacing: 30, forcePageBreak: false
+                        spacing: 0, forcePageBreak: false
                     };
                 }
             });
