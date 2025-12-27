@@ -255,14 +255,14 @@ const MathBlock = {
                 if (span.textContent.trim() === "f") {
                     span.style.paddingLeft = '0.1em';
                 }
-                if (span.textContent.trim() === "∣" || span.textContent.trim() === "∀") {
+                if (span.textContent.trim() === "∣" || span.textContent.trim() === "∀" || span.textContent.trim() === "∃") {
                     span.style.fontFamily = 'KaTeX_Main';
                 }
             });
             const spans3 = root.value.querySelectorAll('span.mbin');
             spans3.forEach(span => {
-                console.log(span.textContent.trim());
-                if (span.textContent.trim() === "⋅") {
+                // console.log(span.textContent.trim());
+                if (span.textContent.trim() === "⋅" || span.textContent.trim() === "∖") {
                     span.style.fontFamily = 'KaTeX_Main';
                 }
             });
@@ -303,11 +303,11 @@ D. (1) 为假命题， (2) 为假命题。
 
 ### 三、解答题（本大题共 5 小题，满分 78 分）
 
-21. **（本题满分 14 分，第（1）小问 4 分，第（2）小问 6 分，第（3）小问 8 分）**
+21. **（本题满分 18 分，第（1）小问 4 分，第（2）小问 6 分，第（3）小问 8 分）**
 若函数 $f(x)$ 的定义域为 $D$，当对 $\\forall x \\in D$ 均有 $f(x)=f_0(x)$ 时，我们称 $f(x)$ 为 $f_0(x)$-函数。
 （1）判断 $f(x)=\\sin x$ 是否为 $\\sin x$-函数，并说明理由；
 （2）已知 $a \\in \\mathbb{R}$，$f(x)=a\\sqrt{1-x}$，当 $f(x)$ 为 $\\pi\\sqrt{1-x}$-函数时，求 $a$ 的值，并判断此时 $a$ 是否是有理数；
-（3）证明：“$f(x)$ 是 $g(x)$-函数”不是“$g(x)$ 是 $f(x)$-函数”充分必要条件。`;
+（3）证明：“$f(x)$ 是 $g(x)$-函数”不是“$g(x)$ 是 $f(x)$-函数”的充分必要条件。`;
 
         const rawInput = ref(defaultText);
         const allBlocks = ref([]);
