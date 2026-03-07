@@ -65,24 +65,26 @@ createApp({
     components: { MathBlock },
     setup() {
         // 初始示例
-        const defaultText = `#0a 2050 年上海市普通高校冬季招生统一文化考试
+        const defaultText = `#font simsun
+#size 15px
+
+#0a 2050 年上海市普通高校冬季招生统一文化考试
 #0b 数学试卷
 #note （考试时间 120 分钟，满分 150 分）
 #note （试卷共 4 页，答题纸共 2 页）
 ### 一、填空题（本大题共 12 题，第 1—6 题每题 4 分，第 7—12 题每题 5 分，共 54 分）
-1. 欧拉公式的提出者是_________.
-2. 上海高中数学共有选择性必修_________册.
-11. 已知抛物线 $\\Gamma: y^2=2px(p>0)$，对 $\\Gamma$ 上的任意一点 $P$，在 $\\Gamma$ 上均存在两点 $A,B$（与 $P$ 不重合），使得 $\\triangle ABP$ 为等边三角形，则 $\\Gamma$ 离心率的取值范围为________。
-12. 已知 $\\vec{a}, \\vec{b}, \\vec{c}$ 为平面内的单位向量，若对任意 $\\vec{a}, \\vec{b}$，均存在 $\\vec{c}$ 使 $\\vec{a} \\cdot \\vec{c}$ 与 $\\vec{b} \\cdot \\vec{c}$ 均小于 $\\dfrac 1 2$，则 $| \\vec{a} | + | \\vec{b} |$ 的最小值为________。
-
+1. 欧拉公式的提出者是___。
+2. 上海高中数学共有选择性必修___册。(精确到 0.01)
+11. 已知抛物线 $\\Gamma: y^2=2px(p>0)$，对 $\\Gamma$ 上的任意一点 $P$，在 $\\Gamma$ 上均存在两点 $A,B$ (与 $P$ 不重合)，使得 $\\triangle ABP$ 为等边三角形，则 $\\Gamma$ 离心率的取值范围为___。
+12. 已知 $\\vec{a}, \\vec{b}, \\vec{c}$ 为平面内的单位向量，若对任意 $\\vec{a}, \\vec{b}$，均存在 $\\vec{c}$ 使 $\\vec{a} \\cdot \\vec{c}$ 与 $\\vec{b} \\cdot \\vec{c}$ 均小于 $\\dfrac 1 2$，则 $| \\vec{a} | + | \\vec{b} |$ 的最小值为___。
 
 ### 二、选择题（本大题共 4 题，第 13、14 题每题 4 分，第 15、16 题每题 5 分，共 18 分）
-13. 下列关于等式 “$1+1=2$” 的说法正确的是_______.（不定项）
+13. 下列关于等式 “$1+1=2$” 的说法正确的是___。(不定项)
 A. 既是真命题也是数学公理；
 B. 体现了数学公式的对称美；
 C. 体现了数学公式的简洁性；
 D. 运用了“等量代换”的思想。
-16. 给出以下两个命题，下列说法正确的是_______.
+16. 给出以下两个命题，下列说法正确的是___。
 （1）$\\left(\\sin \\dfrac \\pi 2\\right)'= \\cos \\dfrac \\pi 2$；
 （2）$\\left(\\cos \\dfrac \\pi 2\\right)'= \\sin \\dfrac \\pi 2$。
 A. (1) 为真命题， (2) 为真命题；
@@ -92,7 +94,7 @@ D. (1) 为假命题， (2) 为假命题。
 
 ### 三、解答题（本大题共 5 题，第 17—19 题每题 14 分，第 20—21 题每题 18 分，共 78 分）
 
-21. （第 1 小题满分 4 分，第 2 小题满分 6 分，第 3 小题满分 8 分）
+21.  (第 1 小题满分 4 分，第 2 小题满分 6 分，第 3 小题满分 8 分)
 若函数 $f(x)$ 的定义域为 $D_f$，当对 $\\forall x \\in D_f$ 均有 $f(x)=f_0(x)$ 时，我们称 $f(x)$ 为 $f_0(x)$-函数。
 （1）判断 $f(x)=\\sin x$ 是否为 $\\sin x$-函数，并说明理由；
 （2）已知 $a \\in \\mathbb{R}$，$f(x)=a\\sqrt{1-x}$，当 $f(x)$ 为 $\\pi\\sqrt{1-x}$-函数时，求 $a$ 的值，并判断此时 $a$ 是否是有理数；
@@ -114,6 +116,12 @@ D. (1) 为假命题， (2) 为假命题。
             '### ':      { type: 'title3',  render: (content) => `<div class="third-title">${content}</div>` },
         };
 
+        const FONT_CONFIG = {
+            'simsun': { family: 'simsun', offset: '-0.03em', scale: '1.05em' },
+            'zhongsong': { family: '"STZhongsong", serif', offset: '0.045em', scale: '1em' },
+            'shusong': { family: '"STShusong-Z01S", serif', offset: '0.045em', scale: '1em' },
+        }
+
         // --- 解析器 (包含新 Feature) ---
         const parse = () => {
             statusText.value = "解析中...";
@@ -124,6 +132,8 @@ D. (1) 为假命题， (2) 为假命题。
             let current = null;
             let idSeq = 1;
             let optionBuffer = []; // 选择题缓冲区
+            let currentFont = 'zhongsong'; // 字体缓冲区
+            let currentSize = '16px';
 
             const fixFont = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
@@ -131,9 +141,10 @@ D. (1) 为假命题， (2) 为假命题。
             const flushOptions = () => {
                 if (optionBuffer.length > 0) {
                     // 启发式测算：剥除KaTeX标识符后计算最大字符长度
-                    let maxLen = Math.max(...optionBuffer.map(o => o.text.length));
+                    const getVisualLength = s => s.replace(/\$.*?\$/g, "###").replace(/<[^>]+>/g, "").split('').reduce((l, c) => l + (c.charCodeAt(0) > 255 ? 2 : 1), 0);
+                    let maxLen = Math.max(...optionBuffer.map(o => getVisualLength(o.text)));
                     console.log(optionBuffer, "选项最大长度:", maxLen);
-                    let colsClass = maxLen <= 8 ? 'mcq-cols-4' : (maxLen <= 19 ? 'mcq-cols-2' : 'mcq-cols-1');
+                    let colsClass = maxLen <= 18 ? 'mcq-cols-4' : (maxLen <= 30 ? 'mcq-cols-2' : 'mcq-cols-1');
                     
                     let optionsHtml = `<div class="mcq-options ${colsClass}">`;
                     optionBuffer.forEach(opt => {
@@ -157,7 +168,6 @@ D. (1) 为假命题， (2) 为假命题。
                 const content = fixFont(current.rawContent);
                 const config = Object.values(FORMAT_CONFIG).find(c => c.type === current.type);
                 if (config) { // 匹配到特殊格式
-                    console.log("渲染格式:", current.type, content);
                     current.html = config.render(content);
                 } else if (current.type === 'question') { // 题目
                     current.html = `<ol start="${current.number}"><li>${content}</li></ol>`;
@@ -168,9 +178,21 @@ D. (1) 为假命题， (2) 为假命题。
             };
 
             lines.forEach(line => {
-                const trim0 = line.trim();
+                const trim0 = line.trim().replace('___', '_________').replace('(_)', '($\\hspace{0.8cm}$)');
                 // 处理中文字体包裹
                 const trim = trim0.replace(/([\u4e00-\u9fff]+)/g, '<span class="chinese-fix">$1</span>');
+
+                // -1. 解析 meta 信息（字体大小等）
+                // 匹配字体设置
+                if (trim0.startsWith('#font ')) {
+                    currentFont = trim0.substring(6).trim();
+                    return;
+                }
+                // 匹配大小设置
+                if (trim0.startsWith('#size ')) {
+                    currentSize = trim0.substring(6).trim();
+                    return;
+                }
 
                 // 0. 判断是否为选择题选项 (兼容 A. A。A、A．)
                 const mcqMatch = trim0.match(/^([A-D])[.。、．]\s*(.*)/);
@@ -249,6 +271,15 @@ D. (1) 为假命题， (2) 为假命题。
                     }
                 });
             }
+
+            console.log(currentFont, currentSize);
+            if (FONT_CONFIG[currentFont]) {
+                const cfg = FONT_CONFIG[currentFont];
+                document.documentElement.style.setProperty('--paper-font-family', cfg.family);
+                document.documentElement.style.setProperty('--paper-font-vertical-align', cfg.offset);
+                document.documentElement.style.setProperty('--paper-font-scale-size', cfg.scale);
+            }
+            document.documentElement.style.setProperty('--paper-base-size', currentSize);
 
             allBlocks.value = blocks;
             nextTick(layout);

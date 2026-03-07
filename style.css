@@ -6,15 +6,23 @@
     --paper-font-scale-size: 1em; /* 字号系数，万一某个字体的字特别大/小之类 */
 }
 
+@font-face {
+    font-family: 'bracket-fix';
+    src: local('simsun');
+    unicode-range: U+0028, U+0029;
+}
+
 /* =========================================
     1. 您的原始样式 (Scope 隔离版 - 未修改)
     ========================================= */
 .paper-style-scope {
-    font-family: Times New Roman, var(--paper-font-family);
+    font-family: 'bracket-fix', Times New Roman, var(--paper-font-family);
     color: #000000;
     line-height: 1.8em;
     word-break: break-all;
-    font-size: 16px;
+    font-size: var(--paper-base-size);
+    line-break: strict;
+    hanging-punctuation: last allow-end;
 }
 
 .paper-style-scope .chinese-fix {
@@ -36,15 +44,15 @@
     content: "(" counter(pp-counter) ")";
     counter-increment: pp-counter;
     position: absolute;
-    left: -25px;
+    left: -30px;
     color: black;
     font-size: 1.1em;
-    font-family: "Times New Roman";
+    font-family: 'bracket-fix', Times New Roman, var(--paper-font-family);
 }
 
 .paper-style-scope li { counter-reset: pp-counter; }
 .paper-style-scope li::marker { font-size: 1.1em; margin-right: 10px; font-family: "Times New Roman"; }
-.paper-style-scope pp { margin-left: 25px; position: relative; display: block; }
+.paper-style-scope pp { margin-left: 30px; position: relative; display: block; }
 .paper-style-scope ol { list-style: decimal; padding-left: 2em; margin: 0; }
 .paper-style-scope ul { list-style: disc; padding-left: 2em; margin: 0; }
 .paper-style-scope strong { font-weight: bold; }
@@ -102,7 +110,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Times New Roman", "Kaiti SC", "STKaiti", serif;
+    font-family: "Times New Roman", "STKaiti", "Kaiti SC", serif;
     font-size: 0.9em;
     /* color: #666; 备注通常颜色稍浅 */
     text-align: center;
