@@ -1,0 +1,205 @@
+:root {
+    /* 定义全局默认值 */
+    --paper-font-family: "STZhongsong", serif;
+    --paper-base-size: 16px;
+    --paper-font-vertical-align: 0.045em; /* 垂直偏移 */
+    --paper-font-scale-size: 1em; /* 字号系数，万一某个字体的字特别大/小之类 */
+}
+
+/* =========================================
+    1. 您的原始样式 (Scope 隔离版 - 未修改)
+    ========================================= */
+.paper-style-scope {
+    font-family: Times New Roman, var(--paper-font-family);
+    color: #000000;
+    line-height: 1.8em;
+    word-break: break-all;
+    font-size: 16px;
+}
+
+.paper-style-scope .chinese-fix {
+    font-family: var(--paper-font-family);
+    font-size: var(--paper-font-scale-size);
+    vertical-align: var(--paper-font-vertical-align);
+}
+
+.paper-style-scope .katex { font-family: "Times New Roman", Times, serif !important; font-size: 1.1em; }
+.paper-style-scope .mrel, 
+.paper-style-scope .mopen, 
+.paper-style-scope .mclose { font-family: KaTeX_Main !important; }
+.paper-style-scope .mathnormal { font-family: "Times New Roman" !important; }
+.paper-style-scope .katex .mathnormal { font-family: "Times New Roman", Times, serif !important; }
+.paper-style-scope .mord.mtight { font-family: "Times New Roman"; }
+.paper-style-scope .katex-display { margin: 0; }
+
+.paper-style-scope pp::before {
+    content: "(" counter(pp-counter) ")";
+    counter-increment: pp-counter;
+    position: absolute;
+    left: -25px;
+    color: black;
+    font-size: 1.1em;
+    font-family: "Times New Roman";
+}
+
+.paper-style-scope li { counter-reset: pp-counter; }
+.paper-style-scope li::marker { font-size: 1.1em; margin-right: 10px; font-family: "Times New Roman"; }
+.paper-style-scope pp { margin-left: 25px; position: relative; display: block; }
+.paper-style-scope ol { list-style: decimal; padding-left: 2em; margin: 0; }
+.paper-style-scope ul { list-style: disc; padding-left: 2em; margin: 0; }
+.paper-style-scope strong { font-weight: bold; }
+
+.paper-style-scope .title-text {
+    display: block;
+    font-size: 1.8em;
+    line-height: 1.6em;
+    /* padding: 5px; */
+    text-align: center;
+    /* margin-bottom: 1em; */
+    font-weight: bold;
+    font-family: 'Times New Roman', 'Heiti SC' !important;
+}
+
+.paper-style-scope .small-title {
+    display: inline-block;
+    border: 1px solid;
+    font-size: 1.1em;
+    line-height: 1.6em;
+    padding: 4px;
+    text-align: center;
+}
+
+.paper-style-scope .third-title {
+    font-size: 1em;
+    /* font-weight: bold; */
+    font-family: 'Times New Roman', 'SimHei', 'Heiti SC' !important;
+}
+
+/* (1) #title0a: 华文中宋 + Times, 25px, 居中 */
+.paper-style-scope .title-0a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Times New Roman", "STZhongsong", serif;
+    font-size: 1.6em;
+    line-height: 1.5em;
+    text-align: center;
+}
+
+/* (2) #title0b: 黑体 + Times, 30px, 居中 */
+.paper-style-scope .title-0b {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Times New Roman", "SimHei", "Heiti SC", sans-serif;
+    font-size: 2em;
+    line-height: 2em;
+    text-align: center;
+}
+
+/* (3) #note: 楷体 + Times, 10px, 居中 */
+.paper-style-scope .note-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Times New Roman", "Kaiti SC", "STKaiti", serif;
+    font-size: 0.9em;
+    /* color: #666; 备注通常颜色稍浅 */
+    text-align: center;
+}
+
+/* =========================================
+    2. 排版系统核心样式
+    ========================================= */
+body { margin: 0; overflow: hidden; background: #e5e7eb; }
+
+.a4-page {
+    width: 210mm;
+    height: 297mm;
+    /* 将 height 改为 min-height，保证空页依然是A4比例 */
+    /* height: max-content; 允许超出时自然拉伸，避免截断 */
+    background: white;
+    margin: 0 auto 20px auto;
+    padding: 20mm;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;/*visible; /* 去掉 hidden，使得内容绝对不被隐藏 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* [新增] 选择题智能排版样式 */
+.paper-style-scope .mcq-options {
+    display: grid;
+    width: 100%;
+    /* margin-top: 0.5em; */
+    /* row-gap: 0.8em; */
+}
+.paper-style-scope .mcq-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.paper-style-scope .mcq-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.paper-style-scope .mcq-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.paper-style-scope .mcq-item { 
+    display: flex; 
+    align-items: flex-start;
+}
+
+.block-wrapper { position: relative; width: 100%; }
+.block-wrapper:hover { background-color: rgba(59, 130, 246, 0.03); }
+
+.resize-handle {
+    height: 5px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    cursor: ns-resize;
+    z-index: 50;
+}
+.block-wrapper:hover .resize-handle { background: rgba(0,0,0,0.05); }
+.resize-handle:hover, .resize-handle.active { background: #3b82f6 !important; height: 8px; }
+
+.force-break-indicator {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    color: red;
+    font-size: 14px;
+    display: none;
+}
+.block-wrapper.forced-break .force-break-indicator { display: block; }
+
+#measure-jail {
+    position: absolute;
+    top: 0; left: 0;
+    width: 170mm;
+    z-index: -999;
+    visibility: hidden;
+    background: white;
+}
+
+/* =========================================
+    3. 打印专用样式
+    ========================================= */
+@page { size: A4 portrait; margin: 0; }
+@media print {
+    body, html, #app, #app-main, .preview-container {
+        height: auto !important;
+        overflow: visible !important;
+        background: white !important;
+        display: block !important;
+        position: static !important;
+    }
+    #app-header, #app-editor-panel, .resize-handle, .force-break-indicator, ::-webkit-scrollbar {
+        display: none !important;
+    }
+    .w-3\/5 { width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    .a4-page {
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        break-after: page;
+        page-break-after: always;
+    }
+    .a4-page:last-child { break-after: auto; }
+}
