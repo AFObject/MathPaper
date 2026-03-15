@@ -12,11 +12,18 @@
     unicode-range: U+0028, U+0029;
 }
 
+/* ===== 数学字体样式 ===== */
+@font-face {
+    font-family: 'MathFix';
+    src: url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/fonts/KaTeX_Main-Regular.woff2') format('woff2');
+    unicode-range: U+007C, U+2223, U+2200, U+2203, U+2032, U+22C5; 
+}
+
 /* =========================================
     1. 您的原始样式 (Scope 隔离版 - 未修改)
     ========================================= */
 .paper-style-scope {
-    font-family: 'bracket-fix', Times New Roman, var(--paper-font-family);
+    font-family: 'bracket-fix', 'Times New Roman', var(--paper-font-family);
     color: #000000;
     line-height: 1.8em;
     word-break: break-all;
@@ -31,16 +38,15 @@
     vertical-align: var(--paper-font-vertical-align);
 }
 
-.paper-style-scope .katex { font-family: "Times New Roman", Times, serif !important; font-size: 1.1em; }
+.paper-style-scope .katex { font-family: 'MathFix', 'Times New Roman', serif !important; font-size: 1.1em; }
 .paper-style-scope .mrel, 
 .paper-style-scope .mopen, 
 .paper-style-scope .mclose { font-family: KaTeX_Main !important; }
-.paper-style-scope .mathnormal { font-family: "Times New Roman" !important; }
-.paper-style-scope .katex .mathnormal { font-family: "Times New Roman", Times, serif !important; }
-.paper-style-scope .mord.mtight { font-family: "Times New Roman"; }
+.paper-style-scope .mathnormal { font-family: 'MathFix', 'Times New Roman', serif !important; }
+.paper-style-scope .mord.mtight { font-family: 'MathFix', 'Times New Roman', serif !important; }
 .paper-style-scope .katex-display { margin: 0; }
 
-.paper-style-scope pp::before {
+/* .paper-style-scope pp::before {
     content: "(" counter(pp-counter) ")";
     counter-increment: pp-counter;
     position: absolute;
@@ -48,10 +54,11 @@
     color: black;
     font-size: 1.1em;
     font-family: 'bracket-fix', Times New Roman, var(--paper-font-family);
-}
+} */
 
-.paper-style-scope li { counter-reset: pp-counter; }
-.paper-style-scope li::marker { font-size: 1.1em; margin-right: 10px; font-family: "Times New Roman"; }
+/* .paper-style-scope li { counter-reset: pp-counter; } */
+.paper-style-scope .sub-question li::marker { content: "(" counter(list-item) ") "; }
+.paper-style-scope li::marker { font-size: 1.1em; }
 .paper-style-scope pp { margin-left: 30px; position: relative; display: block; }
 .paper-style-scope ol { list-style: decimal; padding-left: 2em; margin: 0; }
 .paper-style-scope ul { list-style: disc; padding-left: 2em; margin: 0; }

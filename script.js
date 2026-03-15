@@ -24,28 +24,10 @@ const MathBlock = {
                 }
             } catch (e) { console.error(e); }
 
-            // 执行字体微调 (您的原始逻辑)
-            const spans = root.value.querySelectorAll('span.mord.mtight');
+            const spans = root.value.querySelectorAll('span.mord');
             spans.forEach(span => {
-                if (span.textContent.trim() === "′") {
+                if (span.textContent.trim() === "f" || span.textContent.trim() === "′") {
                     span.style.paddingLeft = '0.1em';
-                    span.style.fontFamily = 'KaTeX_Main';
-                }
-            });
-            const spans2 = root.value.querySelectorAll('span.mord');
-            spans2.forEach(span => {
-                if (span.textContent.trim() === "f") {
-                    span.style.paddingLeft = '0.1em';
-                }
-                if (span.textContent.trim() === "∣" || span.textContent.trim() === "∀" || span.textContent.trim() === "∃") {
-                    span.style.fontFamily = 'KaTeX_Main';
-                }
-            });
-            const spans3 = root.value.querySelectorAll('span.mbin');
-            spans3.forEach(span => {
-                // console.log(span.textContent.trim());
-                if (span.textContent.trim() === "⋅" || span.textContent.trim() === "∖") {
-                    span.style.fontFamily = 'KaTeX_Main';
                 }
             });
         };
@@ -74,17 +56,17 @@ createApp({
 #note （试卷共 4 页，答题纸共 2 页）
 ### 一、填空题（本大题共 12 题，第 1—6 题每题 4 分，第 7—12 题每题 5 分，共 54 分）
 1. 欧拉公式的提出者是___。
-2. 上海高中数学共有选择性必修___册。(精确到 0.01)
+2. 上海高中数学共有选择性必修___册。(精确到 $0.01$)
 11. 已知抛物线 $\\Gamma: y^2=2px(p>0)$，对 $\\Gamma$ 上的任意一点 $P$，在 $\\Gamma$ 上均存在两点 $A,B$ (与 $P$ 不重合)，使得 $\\triangle ABP$ 为等边三角形，则 $\\Gamma$ 离心率的取值范围为___。
 12. 已知 $\\vec{a}, \\vec{b}, \\vec{c}$ 为平面内的单位向量，若对任意 $\\vec{a}, \\vec{b}$，均存在 $\\vec{c}$ 使 $\\vec{a} \\cdot \\vec{c}$ 与 $\\vec{b} \\cdot \\vec{c}$ 均小于 $\\dfrac 1 2$，则 $| \\vec{a} | + | \\vec{b} |$ 的最小值为___。
 
 ### 二、选择题（本大题共 4 题，第 13、14 题每题 4 分，第 15、16 题每题 5 分，共 18 分）
-13. 下列关于等式 “$1+1=2$” 的说法正确的是___。(不定项)
+13. 下列关于等式 “$1+1=2$” 的说法正确的是(_)。(不定项)
 A. 既是真命题也是数学公理；
 B. 体现了数学公式的对称美；
 C. 体现了数学公式的简洁性；
 D. 运用了“等量代换”的思想。
-16. 给出以下两个命题，下列说法正确的是___。
+16. 给出以下两个命题，下列说法正确的是(_)。
 （1）$\\left(\\sin \\dfrac \\pi 2\\right)'= \\cos \\dfrac \\pi 2$；
 （2）$\\left(\\cos \\dfrac \\pi 2\\right)'= \\sin \\dfrac \\pi 2$。
 A. (1) 为真命题， (2) 为真命题；
@@ -239,7 +221,7 @@ D. (1) 为假命题， (2) 为假命题。
                 // 3. 小题解析
                 const matchSub = trim.match(/^(\(\d+\)|（\d+）)(.*)/);
                 if (matchSub && current && current.type == 'question') {
-                    current.rawContent += `<pp>${matchSub[2]}</pp>`; 
+                    current.rawContent += `<ol class='sub-question' start="${matchSub[1].replace(/\D/g, '')}"><li>${matchSub[2].trim()}</li></ol>`;
                     return;
                 }
 
