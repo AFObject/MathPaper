@@ -214,7 +214,7 @@ D. (1) 为假命题， (2) 为假命题。
                 const matchQ = trim.match(/^(\d+)[.。、．]\s*(.*)/); // 强化正则，容错句号
                 if (matchQ) {
                     flushCurrent();
-                    current = { id: idSeq++, type: 'question', number: matchQ[1], rawContent: matchQ[2].trim(), spacing: 0, forcePageBreak: false };
+                    current = { id: idSeq++, type: 'question', number: matchQ[1], rawContent: matchQ[2].trim(), spacing: 10, forcePageBreak: false };
                     return;
                 }
 
@@ -319,7 +319,7 @@ D. (1) 为假命题， (2) 为假命题。
         const onDrag = (e) => {
             if (!isDragging.value) return;
             const dy = e.clientY - dragData.startY;
-            let newSpace = Math.max(10, dragData.startSpace + dy);
+            let newSpace = Math.max(0, dragData.startSpace + dy);
             dragData.block.spacing = newSpace;
             layout();
         };

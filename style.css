@@ -16,7 +16,7 @@
 @font-face {
     font-family: 'MathFix';
     src: url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/fonts/KaTeX_Main-Regular.woff2') format('woff2');
-    unicode-range: U+007C, U+2223, U+2200, U+2203, U+2032, U+22C5; 
+    unicode-range: U+007C, U+2223, U+2200, U+2203, U+2032, U+22C5, U+2218, U+02C9; 
 }
 
 /* =========================================
@@ -29,7 +29,6 @@
     word-break: break-all;
     font-size: var(--paper-base-size);
     line-break: strict;
-    hanging-punctuation: last allow-end;
 }
 
 .paper-style-scope .chinese-fix {
