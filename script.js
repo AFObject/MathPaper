@@ -147,7 +147,15 @@ D. (1) 为假命题， (2) 为假命题。
 
             const flushCurrent = () => {
                 if (!current) return;
-                const content = fixFont(current.rawContent);
+                // fixFont: Markdown 加粗（通用）
+                let content = fixFont(current.rawContent);
+                
+                // 中文修复：仅限题目正文部分
+                const isHeaderOrNote = ['title', 'title2', 'title3', 'title0a', 'title0b', 'note'].includes(current.type);
+                if (!isHeaderOrNote) {
+                    content = content.replace(/([\u4e00-\u9fa5\u3002\uff1f\uff01\uff0c\u3001\uff1b\uff1a\u201c\u201d\u2018\u2019\uff08\uff09\u300a\u300b\u3008\u3009\u3010\u3011\u300e\u300f\u300c\u300d\u3014\u3015\u2026\u2014\uff5e\uff0e]+)/g, '<span class="chinese-fix">$1</span>');
+                }
+
                 const config = Object.values(FORMAT_CONFIG).find(c => c.type === current.type);
                 if (config) { // 匹配到特殊格式
                     current.html = config.render(content);
@@ -160,9 +168,9 @@ D. (1) 为假命题， (2) 为假命题。
             };
 
             lines.forEach(line => {
-                const trim0 = line.trim().replace('___', '_________').replace('(_)', '($\\hspace{0.8cm}$)');
+                const trim0 = line.trim().replace('___', '________').replace('(_)', '($\\hspace{0.8cm}$)');
                 // 处理中文字体包裹
-                const trim = trim0.replace(/([\u4e00-\u9fa5\u3002\uff1f\uff01\uff0c\u3001\uff1b\uff1a\u201c\u201d\u2018\u2019\uff08\uff09\u300a\u300b\u3008\u3009\u3010\u3011\u300e\u300f\u300c\u300d\u3014\u3015\u2026\u2014\uff5e\uff0e]+)/g, '<span class="chinese-fix">$1</span>');
+                // const trim = trim0.replace(/([\u4e00-\u9fa5\u3002\uff1f\uff01\uff0c\u3001\uff1b\uff1a\u201c\u201d\u2018\u2019\uff08\uff09\u300a\u300b\u3008\u3009\u3010\u3011\u300e\u300f\u300c\u300d\u3014\u3015\u2026\u2014\uff5e\uff0e]+)/g, '<span class="chinese-fix">$1</span>');
 
                 // -1. 解析 meta 信息（字体大小等）
                 // 匹配字体设置
@@ -184,7 +192,7 @@ D. (1) 为假命题， (2) 为假命题。
                         // 估算长度：去掉匹配头，并粗略去掉 $ 和 \ 以评估排版空间
                         text: mcqMatch[2].replace(/[\$\\]/g, ''), 
                         // HTML本体使用已经包裹过中文字体的 trim 结果
-                        rawHtml: trim.replace(/^([A-D])[.。、．]\s*/, '') 
+                        rawHtml: trim0.replace(/^([A-D])[.。、．]\s*/, '') 
                     });
                     return; // 被判定为选项，直接进入下一循环
                 } else {
@@ -211,7 +219,7 @@ D. (1) 为假命题， (2) 为假命题。
                 }
 
                 // 2. 题目解析
-                const matchQ = trim.match(/^(\d+)[.。、．]\s*(.*)/); // 强化正则，容错句号
+                const matchQ = trim0.match(/^(\d+)[.。、．]\s*(.*)/); // 强化正则，容错句号
                 if (matchQ) {
                     flushCurrent();
                     current = { id: idSeq++, type: 'question', number: matchQ[1], rawContent: matchQ[2].trim(), spacing: 10, forcePageBreak: false };
@@ -219,7 +227,7 @@ D. (1) 为假命题， (2) 为假命题。
                 }
 
                 // 3. 小题解析
-                const matchSub = trim.match(/^(\(\d+\)|（\d+）)(.*)/);
+                const matchSub = trim0.match(/^(\(\d+\)|（\d+）)(.*)/);
                 if (matchSub && current && current.type == 'question') {
                     current.rawContent += `<ol class='sub-question' start="${matchSub[1].replace(/\D/g, '')}"><li>${matchSub[2].trim()}</li></ol>`;
                     return;
@@ -231,13 +239,13 @@ D. (1) 为假命题， (2) 为假命题。
                     if (isHeader || current.type === 'text') {
                         // 如果当前是无格式的纯文本，每一行独立成块，以触发自然分页
                         flushCurrent();
-                        current = { id: idSeq++, type: 'text', rawContent: trim, spacing: 0, forcePageBreak: false };
+                        current = { id: idSeq++, type: 'text', rawContent: trim0, spacing: 0, forcePageBreak: false };
                     } else {
                         // 题目块内的续行，依然拼接到一起（保证缩进样式不断裂）
-                        current.rawContent += `<br>${trim}`;
+                        current.rawContent += `<br>${trim0}`;
                     }
                 } else {
-                    current = { id: idSeq++, type: 'text', rawContent: trim, spacing: 0, forcePageBreak: false };
+                    current = { id: idSeq++, type: 'text', rawContent: trim0, spacing: 0, forcePageBreak: false };
                 }
             });
             
