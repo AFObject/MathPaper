@@ -16,7 +16,7 @@
 @font-face {
     font-family: 'MathFix';
     src: url('https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/fonts/KaTeX_Main-Regular.woff2') format('woff2');
-    unicode-range: U+007C, U+2223, U+2200, U+2203, U+2032, U+22C5, U+2218, U+02C9; 
+    unicode-range: U+007C, U+2223, U+2200, U+2203, U+2032, U+22C5, U+2218, U+02C9, U+005E; 
 }
 
 /* =========================================
@@ -120,6 +120,20 @@
     font-size: 0.9em;
     /* color: #666; 备注通常颜色稍浅 */
     text-align: center;
+}
+
+/* 20260401 === 针对你生成出的普通文本和题目容器 */
+.paper-style-scope .title-text, .small-title, .third-title, .note-text, ol li {
+    /* 1. 核心：开启两端对齐，自动把上一行空缺的宽度匀给所有字 */
+    text-align: justify;
+    text-justify: inter-ideograph;
+    
+    /* 2. 核心：恢复浏览器原生的严格避头尾排版规则 */
+    line-break: strict;
+    word-break: normal; /* 绝对不能用 break-all，否则避头尾会失效 */
+    
+    /* 3. 允许超长的连续英文/公式强制换行，防止撑爆试卷 */
+    word-wrap: break-word; 
 }
 
 /* =========================================

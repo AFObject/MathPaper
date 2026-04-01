@@ -101,7 +101,7 @@ D. (1) 为假命题， (2) 为假命题。
         const FONT_CONFIG = {
             'simsun': { family: 'simsun', offset: '-0.03em', scale: '1.05em' },
             'zhongsong': { family: '"STZhongsong", serif', offset: '0.045em', scale: '1em' },
-            'shusong': { family: '"STShusong-Z01S", serif', offset: '0.045em', scale: '1em' },
+            'shusong': { family: '"FZShusong-Z01S", serif', offset: '0.01em', scale: '1.03em' },
         }
 
         // --- 解析器 (包含新 Feature) ---
@@ -117,7 +117,7 @@ D. (1) 为假命题， (2) 为假命题。
             let currentFont = 'zhongsong'; // 字体缓冲区
             let currentSize = '16px';
 
-            const fixFont = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            const fixFont = (str) => str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
 
             // [新增] 专门用于将缓存的选择题推入块中
             const flushOptions = () => {
@@ -162,7 +162,7 @@ D. (1) 为假命题， (2) 为假命题。
             lines.forEach(line => {
                 const trim0 = line.trim().replace('___', '_________').replace('(_)', '($\\hspace{0.8cm}$)');
                 // 处理中文字体包裹
-                const trim = trim0.replace(/([\u4e00-\u9fff]+)/g, '<span class="chinese-fix">$1</span>');
+                const trim = trim0.replace(/([\u4e00-\u9fa5\u3002\uff1f\uff01\uff0c\u3001\uff1b\uff1a\u201c\u201d\u2018\u2019\uff08\uff09\u300a\u300b\u3008\u3009\u3010\u3011\u300e\u300f\u300c\u300d\u3014\u3015\u2026\u2014\uff5e\uff0e]+)/g, '<span class="chinese-fix">$1</span>');
 
                 // -1. 解析 meta 信息（字体大小等）
                 // 匹配字体设置
